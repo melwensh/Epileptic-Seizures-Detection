@@ -1,18 +1,52 @@
-# React + Vite
+# EpiDetect 🧠
+An Automated System for Epileptic Seizure Detection & Neurological Analysis
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Project Overview
+EpiDetect is a full-stack medical web platform designed to assist neurologists in analyzing EEG (Electroencephalogram) signals. The system allows doctors to upload patient EDF files, processes the raw brainwaves using a multi-stage Deep Learning pipeline, and presents the results through an interactive, clinical-grade React dashboard.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features I Developed
 
-## React Compiler
+### 1. The AI Pipeline & Signal Processing (`app.py`)
+I implemented a robust Flask API that handles raw `.edf` files using `mne-python` and passes them through a 3-stage deep learning architecture:
+* **Stage 1 (TCN Anomaly Detection):** A Temporal Convolutional Network that quickly scans 100Hz signals to filter out completely normal records, saving computational power.
+* **Stage 2 (Dual-Input Gatekeeper):** A seizure detection model that takes both **Raw EEG windows** and **15 Engineered Features** (extracted using SciPy, including PSD, Hilbert Transform, Delta/Theta ratios, Skew, and Kurtosis) to precisely locate seizure windows.
+* **Stage 3 (Dual-Input Transformer):** Classifies the detected seizure windows into specific typologies (FNSZ: Focal Non-motor, GNSZ: Generalized, CPSZ: Complex Partial) using spatial-temporal frequency maps.
+* **Robust Data Scaling:** Replaced traditional scalers with Median & IQR robust scaling to handle EEG artifacts effectively.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### 2. The Clinical Frontend Dashboard (`React.js`)
+I built a responsive, medical-grade user interface using React to translate raw AI predictions into actionable clinical data:
+* **Dynamic Clinical States:** Engineered the frontend logic to accurately differentiate between **NORMAL**, **ICTAL** (active clinical seizures), and **INTERICTAL** (epileptiform discharges without active seizures) based on the AI's window counts.
+* **Interactive EEG Trace Viewer:** Designed a custom UI component that visualizes the EEG scan duration and highlights seizure episodes with specific color codes and precise start/end timestamps.
+* **Seizure Burden Analytics:** Aggregated raw AI outputs into clear medical metrics (e.g., Total Monitored Time, Seizure Burden Percentage, and Typology Breakdown).
+* **Automated PDF Reporting:** Created a print-optimized React component that generates an official, A4-sized clinical summary report, complete with a physician's signature line and demographic data.
+* **Data Management:** Implemented a secure, globally unique ID allocation system to manage patient records and prevent cross-patient data collisions in local storage.
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## 📊 Dataset Used
+The deep learning models were trained and evaluated using the **[TUH EEG Seizure /TUH EEG Abnormal / Bonn]**, ensuring the models are robust across diverse clinical scenarios and demographic variances.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🛠️ Tech Stack Used
+* **Frontend:** React.js, React Router, CSS3 (Responsive Grid/Flexbox Architectures).
+* **AI Backend:** Python, Flask, MNE-Python, SciPy, NumPy.
+* **Machine Learning:** TensorFlow / Keras (TCN, Transformers, Multi-Head Attention).
+
+---
+
+## ⚙️ How to Run the Project
+
+### 1. Start the AI Backend
+```bash
+cd Website/src
+pip install -r requirements.txt
+python app.py
+```
+### 2. Start the FrontEnd
+```bash
+cd Website/src
+npm install
+npm run dev 
+```
